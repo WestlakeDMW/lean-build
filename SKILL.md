@@ -5,68 +5,58 @@ description: Control optional defensive engineering and test scope when the user
 
 # lean-build
 
-Complete the requested work with the least engineering needed for its actual requirements. Control discretionary defensive construction; do not reduce feature completeness or necessary correctness.
+Complete the requested work with only the engineering its actual requirements need.
 
-## 1. Activate and resolve state
+## 1. Lifecycle and mode
 
-Identify the current project root from the user's project context or repository root; do not assume the skill installation directory is the target project. Read its `Soul.md` if present.
+Skill activation is separate from the engineering mode. Enabling the skill applies a reversible project policy; disabling the skill removes that overlay and restores the settings that existed before activation. `Disable` is an engineering mode while the skill remains active, not a request to turn the skill off.
 
-Use the latest explicit user mode instruction still applicable to this project and scope first, then an active temporary override, then the valid stored mode, then `Low`. Ignore expired instructions. Accept only `Enable`, `Low`, and `Disable`; do not infer a mode from words such as "robust" or "simple."
+Resolve the target project root from the user's project context or repository root, never from the skill installation directory. Read its `Soul.md` before editing. Before the first persistent activation, capture the original managed block, file existence, and session preferences changed by this skill. Keep the baseline across mode changes and repeated activation. Restore the prior overlay to that baseline before applying a fresh overlay; do not replace the baseline with the skill's own settings. On deactivation, restore the baseline immediately, clear temporary overrides and skill-specific session preferences, and stop applying this policy. Do not uninstall the skill or reset unrelated user settings.
 
-Persist activation and explicit mode changes by default. Preserve an existing valid mode on reinvocation without a new selection. Read [persistence.md](references/persistence.md) before writing. A temporary/task-only/session-only request changes session state without writing `Soul.md`; a status query is also read-only. An unqualified temporary request is task-only. Task-only overrides expire after the task's final delivery; session-only overrides expire at session end. On expiry, discard the override and restore the valid stored mode or `Low`. Any later explicit mode instruction replaces the override. Test authorization is separate session state and is never persisted.
+Use the latest explicit mode instruction still applicable to this project and scope, then an active temporary override, then the valid stored mode, then Low. Ignore expired instructions. Valid modes are Enable, Low, and Disable. Persist activation and mode changes by default; preserve a valid stored mode on reinvocation without a new selection. Temporary/task-only/session-only requests and status queries do not write files. Unqualified temporary requests are task-only; they expire after final delivery. Session-only overrides expire at session end. Restore the preceding session state on expiry; any later explicit mode instruction replaces the override. Never persist test authorization.
 
-If the project root is unclear or files are inaccessible, apply the resolved mode in this session and briefly report that persistence was not completed. Do not claim a saved policy or change another project's files.
+If the project root is unclear, files are inaccessible, or a legacy activation has no recorded baseline, report what could not be saved or restored. Do not invent previous settings or claim restoration without evidence. Preserve unrelated edits made while the skill was active.
 
-## 2. Choose the engineering level
+## 2. Engineering levels
 
-| Mode | Discretionary engineering | Automatic validation |
+| Mode | Comments and construction | Automatic checks |
 | --- | --- | --- |
-| `Enable` | Add proportionate handling for concrete, relevant failure cases; retain useful explanations. Avoid speculative future requirements. | Preliminary only |
-| `Low` | Default. Keep necessary checks and brief comments that carry real information. Avoid extra fallback layers, generic frameworks, and future extension points. | Preliminary only |
-| `Disable` | Add no optional defensive handling, explanatory comments, compatibility layers, or hardening. Implement the current requirements and their necessary parts. | Preliminary only |
+| Enable | Proportionate handling for concrete relevant failures; useful concise explanations. No speculative future requirements. | Preliminary correctness checks only; no automatic security testing. |
+| Low | Default. Generate no unnecessary frontend comments, including component/CSS headings, obvious explanations, redundant type narration, or speculative TODOs. No optional fallback layers, frameworks, or future extension points. | No proactively initiated security checks, audits, vulnerability/dependency scans, or hardening verification. Preliminary correctness checks remain available. |
+| Disable | Generate no unnecessary comments in any code. No optional defensive handling, compatibility layers, hardening, or speculative extensions. | No proactive pre-delivery defensive construction or checks, including security tests, audits, stress tests, broad regression, or edge-case campaigns. Preliminary correctness checks remain available. |
 
-Every mode must satisfy explicit requirements, known current behavior, correctness, relevant platform/API contracts, and protections necessary at the current trust boundary or against directly exposed data loss. A speculative future failure does not make an addition necessary. Fix defects introduced by your changes.
+These prohibitions apply to all possible discretionary additions within the task, not only a list of examples. Do not relabel a security check as a smoke or static check to run it. A fresh explicit user request for a particular security test or other broader check authorizes only that named scope for the current task; it does not re-enable automatic checks.
 
-Before adding discretionary work, identify the present requirement or concrete relevant failure it serves. If neither exists, omit it. Even `Enable` does not authorize retry systems, logging infrastructure, configuration switches, compatibility matrices, unrelated refactors, or backend architecture changes merely to make a local change "robust."
+Complete the requested behavior in every mode. Keep necessary correctness, actual platform/API contracts, required license notices and tool directives, and comments explaining constraints that would otherwise invite an incorrect change. Do not use this skill to delete existing comments or protections, disable product security functionality, or waive required quality gates or higher-priority instructions. If a required gate conflicts with the optional-check limit, name its concrete source and perform only the required scope.
 
-Mode changes never authorize removing existing protections, tests, comments, or quality gates. Preserve required gates and follow higher-priority instructions. If they require broader validation, state the concrete requirement and its source; do not silently waive it or treat optional practices as required gates.
+Before discretionary work, identify its present requirement or concrete relevant failure. If neither exists, omit it. Fix defects introduced by your changes without starting unrelated refactors, retry/logging infrastructure, backend redesign, or repository-wide cleanup.
 
-## 3. Keep comments purposeful
+## 3. Validation authorization
 
-Do not add line-by-line narration of obvious code, banners for every component/CSS section, repeated type information, or TODOs for hypothetical features. Do not sweep the repository to remove existing comments.
+By default, choose at most one relevant build, compile, type, or correctness-focused static check, up to three bounded smoke scenarios, and a brief diff review. These are ceilings, not a checklist. Inspect command definitions and lifecycle hooks; judge actual coverage and effects rather than command count. Avoid equivalent successful checks, all-page/device/browser sweeps, and scripts that bundle broader testing, security scans, or deployment. After a local fix, rerun only the affected failed check.
 
-Keep required license notices, tool directives, required API documentation, and explanations of non-obvious constraints whose omission would invite an incorrect change. In `Disable`, omit discretionary explanations; these necessary comments remain allowed.
+Full functional testing, comprehensive regression, security testing/audits, broad end-to-end testing, and stress testing require an explicit user request specifying the scope. Concrete requests to test named flows authorize those flows. Authorization applies only to this task and scope; never store it as a default. Continue, finish it, check it, make it more robust, and switching to Enable do not authorize broad or security testing. Disable does not stop preliminary correctness checks. Delegation does not multiply the task's validation allowance.
 
-## 4. Validate within the authorized scope
+At a delivery after implementation or modification, briefly report once the checks actually run and their outcomes, and broader testing not run. Report failures, unrun checks, and environment blockers accurately; never claim full validation from a build. Do not repeat this reminder during planning, progress, pure discussion, status queries, or lifecycle/mode-only operations.
 
-By default, choose at most one relevant build, compile, type, or static check, plus up to three bounded smoke scenarios and a brief review of the changed code. These are ceilings, not a checklist. For UI work, select representative rendering and the primary interaction; do not enumerate every page, device, and browser.
+## 4. User-facing output
 
-Read [validation.md](references/validation.md) when selecting commands, handling failures, or interpreting test requests. Inspect what a script actually executes, including lifecycle hooks. Count coverage and effects, not command count. A command that runs a full suite, audit, or deployment is outside preliminary validation. Do not invent a check when none is relevant.
+For any turn that enables, disables, re-enables, or only changes the skill mode, do not output any state indicator in any user-facing message, including progress and final replies. Suppress banners, mode badges, and equivalent enabled/disabled or mode announcements for the entire turn, even if it also contains implementation work. Acknowledge the completed action briefly, without a status label. This exception takes precedence over the ordinary active-work rule below.
 
-Full functional testing, comprehensive regression, security audits, broad end-to-end testing, and stress testing require an explicit user request specifying that scope. A concrete request to test particular flows authorizes those flows without requiring a magic phrase. Authorization lasts for this task and specified scope only.
+For ordinary implementation turns while the skill is already active, start each user-facing text message with one English line using the effective mode, for example `Defensive Construction: Low`. Keep the rest in the user's preferred language. After deactivation, stop adding this line.
 
-"Continue," "finish it," "check it," "make it more robust," and switching to `Enable` do not expand test authorization. `Disable` still permits preliminary checks. After a local fix, rerun the affected failed check; do not repeat successful equivalent checks or expand into a repository-wide audit.
+Never place status indicators, lifecycle acceptance notes, or acceptance transcripts in target-project files, source comments, application UI, generated artifacts, or tool argument text. Required mode parameters and the internal Mode field in the managed policy are operational data, not output indicators. Verify lifecycle output suppression within the skill workflow itself; do not add project remarks as a substitute for that acceptance check.
 
-## 5. Show state and report evidence
+## 5. Project persistence and restoration
 
-While active, start every user-facing text message, including progress and final responses, with exactly one line using the effective mode:
+Manage only the defensive-construction block in project-root Soul.md. Keep complete English rules, preserve content outside the block, and read back after writes. Store the pre-activation baseline outside the target project, keyed by its resolved root. Never record only a default mode as a substitute for the actual prior settings.
 
-```text
-Defensive Construction: Low
-```
+On deactivation, restore the previous managed block if one existed, otherwise remove the skill-added block. If the skill created Soul.md and nothing unrelated remains, remove the file. Preserve unrelated content added during activation. If the owned block was externally edited or markers are incomplete, reversed, or duplicated, leave it unchanged and report a restoration conflict. Without a baseline, do not guess or silently remove legacy policy.
 
-Replace `Low` with the actual mode. Keep the rest of the message in the user's preferred language. Do not add a status explanation unless needed. Do not prepend this line to tool arguments, source comments, generated artifacts, repository files, or application UI. A tool's required mode parameter is operational data, not a status banner.
-
-At each delivery after implementation or modification, give one short validation statement naming checks actually run and their outcomes, and the broader testing not run. For example:
-
-```text
-Validation: build and primary-flow smoke check passed; full functional and security testing not run.
-```
-
-Report failures, unrun checks, and environment blockers accurately. Do not claim full validation from a build. Do not repeat the statement during planning, progress updates, pure discussion, status queries, or mode switches. If broader testing was explicitly requested, report its actual scope and result instead of using the default example.
+Do not edit AGENTS.md, global configuration, build scripts, CI, or product settings as part of activation. Soul.md needs an explicitly configured instruction entry point for automatic cross-session loading. Restoration applies to this skill's policy and session settings, not code changes implemented for the user's task.
 
 ## Conditional resources
 
-- [Validation scope and examples](references/validation.md): read when choosing or expanding verification.
-- [Persistence protocol and complete Soul.md block](references/persistence.md): read before saving project policy or discussing cross-session loading.
-- [Soul.md update helper](scripts/update_soul.py): optional Python 3 standard-library helper; updates only the managed block and verifies the saved bytes. No helper is needed for temporary modes or status queries.
+- Read [validation.md](references/validation.md) when selecting checks or verifying lifecycle output.
+- Read [persistence.md](references/persistence.md) before activation, policy writes, or restoration.
+- Use [update_soul.py](scripts/update_soul.py) for persistent activation/mode changes and deactivation; Python 3 standard library only. Do not run it for temporary modes or status queries.

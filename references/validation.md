@@ -1,49 +1,30 @@
-# Validation scope
+# Bounded validation and lifecycle acceptance
 
-## Select preliminary checks
+## Choose correctness checks
 
-Use only checks that can provide useful evidence about the current change:
+Inspect command definitions and hooks. Use at most one applicable build/compile/type/correctness static check and up to three directly affected smoke scenarios. These are optional ceilings, not a requirement to invent tests. A build that already type-checks needs no duplicate type check. A single command that runs a broad suite, audit, vulnerability scan, or deployment is not preliminary validation.
 
-1. Inspect the relevant project command definitions and hooks before execution. Prefer one existing applicable build, compile, type, or static check. If a build already type-checks, do not run an equivalent type check too.
-2. Choose zero to three small smoke scenarios directly affected by the change. One scenario is a bounded path with a concrete expected outcome, not a loop over the entire product. For UI work, representative rendering and the primary interaction are usually sufficient.
-3. Briefly inspect the diff for scope drift and defects you introduced. Repair those locally.
+Low generates no unnecessary frontend comments and starts no security checks. Disable generates no unnecessary comments anywhere and starts no defensive pre-delivery work, including security tests, audits, stress tests, broad regression, and unsolicited edge-case campaigns. Do not run those checks under another label. A required quality gate remains required; identify its source and run only that scope.
 
-For an instruction-only or documentation change, a relevant format/link check or scoped read-through may be sufficient. For a changed helper, exercise its important observable behavior. Do not add tests that merely mirror wording or implementation. Do not install a new testing stack for a small reversible change unless the task actually needs it.
+Repair introduced defects locally and rerun the affected failed check. Report unrelated pre-existing failures without launching a cleanup campaign. Delegation shares the same task budget. Avoid tests that merely repeat the implementation or verify arbitrary wording.
 
-Do not bypass protected environments, trigger deployment, or weaken a quality gate to make a preliminary command fit. When an existing command mixes a useful check with broader optional work, use a supported narrower command. If none exists, report the unavailable check accurately; do not run the broader command under the label "smoke test."
+## Explicit authorization
 
-## Judge actual scope
+“Run the full regression suite” authorizes that suite for the current task. “Security-test the new login endpoint” authorizes that endpoint's security tests, not a product-wide audit. “Test login and reset on Chrome and Safari” authorizes those named flows and browsers. An explicit scope request overrides the default automatic-check prohibition only for that task and scope.
 
-| Situation | Decision |
-| --- | --- |
-| `build` invokes compilation and the same type checker | Run once; no duplicate type check. |
-| `build` invokes all tests, an audit, or deployment hooks | Outside the default allowance; choose a bounded alternative. |
-| One browser script loops over all routes, browsers, and devices | Broad testing despite being one command. |
-| A bounded check fails because of the current patch | Fix the introduced defect, rerun that check. |
-| A check exposes an unrelated pre-existing failure | Report it; continue authorized work that is unaffected. Do not start an unsolicited repair campaign. |
-| A required instruction or gate specifies a broader suite | Preserve it and identify the concrete source; this skill cannot waive it. |
+Continue, finish it, check it, make it robust, and switching engineering mode do not grant broad or security-test authorization. Never persist one-time authorization. A testing request does not authorize deployment, deletion, or unrelated implementation.
 
-The ceiling is per implementation task/delivery, not per file, agent, retry, or message. Subagents share the same validation allowance; delegation does not multiply it. A necessary rerun after a fix verifies the same coverage rather than granting new coverage.
+## Lifecycle closure acceptance
 
-## Interpret user authorization
+Treat enable and disable as a reversible cycle. Verify within the skill's workflow, using an isolated fixture when testing the skill itself:
 
-Explicit scope can be expressed naturally:
+- Capture pre-activation policy/file existence, activate, change modes, then deactivate; the prior owned settings must be restored rather than replaced by a guessed Low setting.
+- Verify unrelated content edited during activation survives restoration, and a newly created policy-only file is removed.
+- Check every user-facing message in enable/disable/re-enable or mode-only turns for absence of state indicators. The lifecycle exception covers progress and final text, including a turn that also implements a feature. Do not emit an indicator in order to demonstrate that it is suppressed.
+- Keep this acceptance result in the skill workflow or its isolated evaluation evidence. Do not add target-project comments, notes, markers, or transcripts to satisfy the output requirement.
 
-- "Run the entire regression suite" authorizes that suite for this task.
-- "Test login, password reset, and session expiry on Chrome and Safari" authorizes those named flows and browsers.
-- "Audit this new authentication endpoint for security" authorizes that endpoint audit, not an organization-wide scan.
+A file-helper test validates restoration behavior; it does not prove that a model always follows the output rule. Report that distinction accurately.
 
-General continuation and quality language does not authorize broad testing: "continue," "finish," "check it," "make it robust," and "Enable" keep the preliminary allowance. When scope is genuinely ambiguous and needed for the requested outcome, ask one focused question while completing independent work. Do not interrupt routine implementation simply to ask whether optional full testing should be run.
+## Deliver evidence once
 
-Authorization applies to the present task and named scope. Do not store it in `Soul.md`, convert it into a project default, or carry it into a later task. An authorized audit or test request still does not authorize unrelated implementation, deletion, deployment, or other external side effects.
-
-## Report once at delivery
-
-Describe actual evidence concisely. The validation sentence may use the user's language; the status line must remain English.
-
-- Passed: `Validation: type check and save-flow smoke check passed; full functional and security testing not run.`
-- Failed: `Validation: compilation failed at the changed import; smoke checks not run; full functional and security testing not run.`
-- Blocked: `Validation: build unavailable because the required SDK is missing; diff review completed; full functional and security testing not run.`
-- Documentation only: `Validation: skill format and reference links checked; runtime behavior not exercised; full functional and security testing not run.`
-
-A scenario review shows how an agent interpreted the instructions in that evaluation; it does not establish reliable behavior across GPT models, projects, or future sessions.
+For implementation deliveries, briefly name checks actually run and their result; mention broader checks not run once. Failures and environment blockers must be stated accurately. Pure lifecycle/mode operations need a brief action acknowledgement without a status indicator or validation reminder. For example, after verified restoration: “已恢复原设置。”
