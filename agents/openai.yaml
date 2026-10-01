@@ -1,0 +1,4 @@
+interface:
+  display_name: "lean-build"
+  short_description: "Control defensive engineering and test scope"
+  default_prompt: "Use $lean-build to set this project to Low and complete the current request with preliminary validation."
