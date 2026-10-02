@@ -16,15 +16,15 @@ Continue, finish it, check it, make it robust, and switching engineering mode do
 
 ## Lifecycle closure acceptance
 
-Treat enable and disable as a reversible cycle. Verify within the skill's workflow, using an isolated fixture when testing the skill itself:
+Check the add/update/remove prompt cycle. Verify within the skill's workflow, using an isolated fixture when testing the skill itself:
 
-- Capture pre-activation policy/file existence, activate, change modes, then deactivate; the prior owned settings must be restored rather than replaced by a guessed Low setting.
-- Verify unrelated content edited during activation survives restoration, and a newly created policy-only file is removed.
+- Add the prompt, change modes, then deactivate; the marked prompt block must be absent, with all unrelated document content unchanged. No baseline is saved or restored.
+- Verify unrelated edits survive prompt removal; keep the .md file even if empty. Removing an older marked policy must work without snapshot history.
 - Check every user-facing message in enable/disable/re-enable or mode-only turns for absence of state indicators. The lifecycle exception covers progress and final text, including a turn that also implements a feature. Do not emit an indicator in order to demonstrate that it is suppressed.
 - Keep this acceptance result in the skill workflow or its isolated evaluation evidence. Do not add target-project comments, notes, markers, or transcripts to satisfy the output requirement.
 
-A file-helper test validates restoration behavior; it does not prove that a model always follows the output rule. Report that distinction accurately.
+A file-helper test validates prompt removal; it does not prove that a model always follows the output rule. Report that distinction accurately.
 
 ## Deliver evidence once
 
-For implementation deliveries, briefly name checks actually run and their result; mention broader checks not run once. Failures and environment blockers must be stated accurately. Pure lifecycle/mode operations need a brief action acknowledgement without a status indicator or validation reminder. For example, after verified restoration: “已恢复原设置。”
+For implementation deliveries, briefly name checks actually run and their result; mention broader checks not run once. Failures and environment blockers must be stated accurately. Pure lifecycle/mode operations need a brief action acknowledgement without a status indicator or validation reminder. For example, after verified prompt removal: “已移除添加的提示词。”

@@ -1,44 +1,43 @@
-# Persistence and reversible lifecycle
+# Project prompt blocks
 
 ## Procedure
 
-1. Resolve the user's target root and read Soul.md. The installed skill directory is not the target.
-2. Save the actual pre-activation state before the first overlay. The helper keeps a root-keyed snapshot under `~/.codex/lean-build-state/`, outside the project. Subsequent updates retain the same baseline.
-3. Apply the complete block below, replacing only Mode. Read back and verify. Temporary requests and status queries require no file writes; record changed session preferences in-session instead.
-4. On skill deactivation, invoke restoration, verify the restored content or file absence, then stop applying skill preferences. Ordinary code changes from user tasks are not rolled back.
-5. Preserve unrelated changes. Malformed markers, externally changed owned content, inaccessible files, or missing legacy snapshots require an honest incomplete-restoration report, not guessed defaults. If the restored baseline itself contains an older policy, do not apply it while the skill is explicitly off in this session.
+1. Resolve the target project root and read Soul.md.
+2. On activation, create or update only the complete marked block below with the selected Mode. Do not duplicate it. Temporary modes and status queries do not write files.
+3. On deactivation, delete only the marked block and stop following it. Keep all other content and the .md file itself. The same removal works for older policy versions; no snapshot, backup, history, or prior-body comparison is needed.
+4. Read back to verify the update or removal and unchanged content outside the block. If no block exists, deactivation is a no-op. Report inaccessible files or ambiguous marker boundaries without claiming completion.
 
-The helper only manages Soul.md; the agent restores its changed session preferences. Do not persist output transcripts or closure acceptance notes in the target project.
+Do not save lifecycle output or acceptance notes in the target project. Do not change other settings or roll back task code.
 
 ## Commands
 
-Activate or change the persistent engineering mode:
+Add or update the project prompt:
 
 ```sh
 python3 /path/to/lean-build/scripts/update_soul.py --project-root /path/to/project --mode Low
 ```
 
-Deactivate the skill and restore the original policy:
+Remove the skill-added prompt:
 
 ```sh
 python3 /path/to/lean-build/scripts/update_soul.py --project-root /path/to/project --disable-skill
 ```
 
-`--mode Disable` retains the skill with defensive construction off. `--disable-skill` restores the baseline and stops the skill. `--state-dir` can select an accessible private snapshot directory outside the target project. Do not confuse it with a target-project note directory. If saving the snapshot is blocked, do not apply persistent changes without a recoverable baseline.
+`--mode Disable` keeps the skill's prompt with defensive construction off. `--disable-skill` removes the prompt. The helper only reads and writes Soul.md; it creates no state files.
 
 ## Cross-session loading
 
-Soul.md is a custom policy file. Only if the user asks for automatic loading, connect it through the effective instruction entry point, usually AGENTS.md:
+Only if the user asks, connect Soul.md through the effective project instruction entry point:
 
 ```text
 At the start of each task, read the project-root Soul.md if it exists and apply its Defensive Construction Policy to this project.
 ```
 
-Preserve the entry point's content and account for AGENTS.override.md precedence. Do not modify entry points or global configuration automatically. See [official instruction discovery](https://learn.chatgpt.com/docs/agent-configuration/agents-md).
+Do not modify that entry point or global configuration automatically. See [official instruction discovery](https://learn.chatgpt.com/docs/agent-configuration/agents-md).
 
 ## Complete English output template
 
-This standalone block contains all operative rules; future sessions need not load the installed skill to interpret it. Its content matches the core sections of SKILL.md.
+This standalone block matches the core rules in SKILL.md.
 
 ```markdown
 <!-- defensive-construction:begin -->
@@ -48,13 +47,13 @@ Mode: Low
 
 ## 1. Lifecycle and mode
 
-Skill activation is separate from the engineering mode. Enabling the skill applies a reversible project policy; disabling the skill removes that overlay and restores the settings that existed before activation. `Disable` is an engineering mode while the skill remains active, not a request to turn the skill off.
+Skill activation is separate from the engineering mode. Enabling inserts or updates this skill's prompt block in Soul.md; disabling deletes that block and stops applying its instructions. `Disable` is an engineering mode while the skill remains active, not a request to turn the skill off.
 
-Resolve the target project root from the user's project context or repository root, never from the skill installation directory. Read its `Soul.md` before editing. Before the first persistent activation, capture the original managed block, file existence, and session preferences changed by this skill. Keep the baseline across mode changes and repeated activation. Restore the prior overlay to that baseline before applying a fresh overlay; do not replace the baseline with the skill's own settings. On deactivation, restore the baseline immediately, clear temporary overrides and skill-specific session preferences, and stop applying this policy. Do not uninstall the skill or reset unrelated user settings.
+Resolve the target project root from the user's project context or repository root, never from the skill installation directory. Read Soul.md before editing. On deactivation, delete only this skill's marked prompt block, clear its temporary mode, and stop following its instructions. Keep all other document content and the document itself. Do not create backups, snapshots, setting histories, or baseline-restoration machinery. Do not uninstall the skill or roll back task code.
 
 Use the latest explicit mode instruction still applicable to this project and scope, then an active temporary override, then the valid stored mode, then Low. Ignore expired instructions. Valid modes are Enable, Low, and Disable. Persist activation and mode changes by default; preserve a valid stored mode on reinvocation without a new selection. Temporary/task-only/session-only requests and status queries do not write files. Unqualified temporary requests are task-only; they expire after final delivery. Session-only overrides expire at session end. Restore the preceding session state on expiry; any later explicit mode instruction replaces the override. Never persist test authorization.
 
-If the project root is unclear, files are inaccessible, or a legacy activation has no recorded baseline, report what could not be saved or restored. Do not invent previous settings or claim restoration without evidence. Preserve unrelated edits made while the skill was active.
+If the project root is unclear or files are inaccessible, report which prompt update or removal could not be completed. Keep unrelated content unchanged; prompt removal needs no history or snapshot.
 
 ## 2. Engineering levels
 
@@ -86,12 +85,13 @@ For ordinary implementation turns while the skill is already active, start each 
 
 Never place status indicators, lifecycle acceptance notes, or acceptance transcripts in target-project files, source comments, application UI, generated artifacts, or tool argument text. Required mode parameters and the internal Mode field in the managed policy are operational data, not output indicators. Verify lifecycle output suppression within the skill workflow itself; do not add project remarks as a substitute for that acceptance check.
 
-## 5. Project persistence and restoration
+## 5. Project prompts
 
-Manage only the defensive-construction block in project-root Soul.md. Keep complete English rules, preserve content outside the block, and read back after writes. Store the pre-activation baseline outside the target project, keyed by its resolved root. Never record only a default mode as a substitute for the actual prior settings.
+Manage only the defensive-construction prompt block in project-root Soul.md. Keep complete English rules, preserve all bytes outside the block, and read back after adding, updating, or deleting it. Repeated activation must not duplicate the block.
 
-On deactivation, restore the previous managed block if one existed, otherwise remove the skill-added block. If the skill created Soul.md and nothing unrelated remains, remove the file. Preserve unrelated content added during activation. If the owned block was externally edited or markers are incomplete, reversed, or duplicated, leave it unchanged and report a restoration conflict. Without a baseline, do not guess or silently remove legacy policy.
+On deactivation, remove the complete marked block regardless of its current mode or whether it was written by an earlier version. No stored baseline or exact match with an earlier policy is required. If no block exists, no file change is needed. Leave the .md file in place even if it becomes empty. If markers are incomplete, reversed, or duplicated, report the ambiguous boundary rather than deleting unrelated content.
 
-Do not edit AGENTS.md, global configuration, build scripts, CI, or product settings as part of activation. Soul.md needs an explicitly configured instruction entry point for automatic cross-session loading. Restoration applies to this skill's policy and session settings, not code changes implemented for the user's task.
+Do not edit AGENTS.md, global configuration, build scripts, CI, or product settings as part of activation. Soul.md needs an explicitly configured instruction entry point for automatic cross-session loading. Disabling changes only this skill's added prompt and in-session applicability.
+
 <!-- defensive-construction:end -->
 ```

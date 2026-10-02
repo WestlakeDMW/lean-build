@@ -6,11 +6,11 @@
 
 | 操作 / 档位 | 行为 |
 | --- | --- |
-| 启用 Skill | 保存启用前的真实基线，再应用选定档位；默认 Low |
+| 启用 Skill | 添加或更新项目 .md 中的专属提示词区块；默认 Low |
 | Enable | 针对具体相关故障适量处理；完整测试与安全检查仍需单独明确授权 |
 | Low | 关闭所有新增的非必要前端注释；不主动执行安全检查、审计、漏洞扫描或加固验证 |
 | Disable | 关闭所有新增的非必要注释，以及交付前的主动防御性构筑与检查，包括安全测试、审计、压力测试和全面回归 |
-| 停用 Skill | 立即撤销自身设置覆盖，恢复启用前的真实设置；不回滚任务代码 |
+| 停用 Skill | 删除添加的提示词区块并停止应用；保留其他内容，不回滚任务代码 |
 
 Low 与 Disable 仍可按需进行必要的构建、类型检查和主要流程冒烟验证。所有档位都完整实现需求，保留必要保护和必需质量门禁。安全测试与完整测试仅在本次明确指定的范围内执行，不成为长期默认行为。
 
@@ -33,7 +33,7 @@ git clone https://github.com/WestlakeDMW/lean-build.git .agents/skills/lean-buil
 ```
 
 ```text
-停用 $lean-build，恢复启用前的设置。
+停用 $lean-build，删除添加的提示词。
 ```
 
 临时档位不写入项目，默认仅当前任务有效；明确要求会话级临时设置时才持续到会话结束。停用 Skill 和 Disable 档位是不同操作。
@@ -42,13 +42,11 @@ git clone https://github.com/WestlakeDMW/lean-build.git .agents/skills/lean-buil
 
 - `SKILL.md`：英文核心规则、档位、开关、输出和范围。
 - `references/validation.md`：验证授权与 Skill 内的生命周期闭环检查。
-- `references/persistence.md`：完整英文 Soul.md 区块与恢复流程。
-- `scripts/update_soul.py`：仅依赖 Python 3 的应用与恢复工具。
+- `references/persistence.md`：完整英文 Soul.md 区块与删除流程。
+- `scripts/update_soul.py`：仅依赖 Python 3 的提示词添加、更新与删除工具。
 
-## 可恢复持久化
+## 提示词管理
 
-Skill 只管理项目根目录 Soul.md 的专属区块。启用前的基线保存在项目外 `~/.codex/lean-build-state/`，按项目根路径区分。重复启用或切换档位不覆盖原始基线。停用恢复原区块；原先没有区块则移除新增内容；原先没有文件且没有其他新增内容时移除文件。其他人的同期编辑保留。
-
-旧版本已启用但没有历史基线时，无法推断真正的启用前设置，工具会如实报告，不会用默认值冒充恢复。
+Skill 只管理 Soul.md 的专属提示词区块。启用添加或更新，停用直接删除该区块，保留区块外内容及 .md 文件。不创建基线备份、快照、历史设置或恢复机制。旧版本添加的完整标记区块也可直接移除，无需历史记录。
 
 Soul.md 的跨会话自动读取需要通过实际生效的 AGENTS.md 等入口明确接入；Skill 不会自行改动该入口或全局配置。见[官方指令发现文档](https://learn.chatgpt.com/docs/agent-configuration/agents-md)。
